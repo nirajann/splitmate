@@ -152,42 +152,92 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
 
   Widget _topHeader(BuildContext context, Lobby lobby) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
+      padding: const EdgeInsets.fromLTRB(18, 14, 18, 4),
       child: Row(
         children: [
-          _roundIconButton(
+          _softCircleButton(
             icon: Icons.arrow_back_ios_new_rounded,
             onTap: () => Navigator.pop(context),
           ),
+
           const SizedBox(width: 12),
+
+          Container(
+            height: 44,
+            width: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.20),
+              borderRadius: BorderRadius.circular(17),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
+            ),
+            child: const Icon(
+              Icons.workspaces_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   lobby.name,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 21,
+                    fontSize: 20,
                     fontWeight: FontWeight.w900,
+                    height: 1.05,
                   ),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  lobby.description,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.82),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.people_alt_rounded,
+                      color: Colors.white.withValues(alpha: 0.78),
+                      size: 13,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${lobby.memberIds.length} members',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.78),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(width: 9),
+                    Container(
+                      height: 4,
+                      width: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.55),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 9),
+                    Text(
+                      lobby.inviteCode,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.78),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
+
           const SizedBox(width: 12),
-          _roundIconButton(
+
+          _softCircleButton(
             icon: Icons.ios_share_rounded,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -200,12 +250,12 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
     );
   }
 
-  Widget _roundIconButton({
+  Widget _softCircleButton({
     required IconData icon,
     required VoidCallback onTap,
   }) {
     return Material(
-      color: Colors.white.withValues(alpha: 0.22),
+      color: Colors.white.withValues(alpha: 0.20),
       shape: const CircleBorder(),
       child: InkWell(
         customBorder: const CircleBorder(),
@@ -218,6 +268,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
       ),
     );
   }
+
 
   Widget _summaryCard({
     required Lobby lobby,
@@ -507,105 +558,79 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
   }
 
   Widget _whoOwesWhom(AppState appState, List<Expense> expenses) {
-    final rows = <Widget>[];
+    final debts = appState.simplifiedDebtsForLobby(widget.lobby.id);
 
-    for (final expense in expenses) {
-      final payer = appState.userById(expense.paidByUserId);
-
-      for (final split in expense.splits) {
-        if (split.userId == expense.paidByUserId) continue;
-        if (split.isPaid) continue;
-
-        final debtor = appState.userById(split.userId);
-
-        rows.add(
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(13),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 17,
-                  backgroundColor: const Color(0xFFFFF0D0),
-                  child: Text(
-                    debtor.name.isEmpty ? '?' : debtor.name[0].toUpperCase(),
-                    style: const TextStyle(
-                      color: AppColors.orange,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    '${debtor.name.split(' ').first} owes ${payer.name.split(' ').first}',
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '\$${split.amount.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        color: Color(0xFFD82C4A),
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    GestureDetector(
-                      onTap: () {
-                        appState.settleSplit(
-                          expenseId: expense.id,
-                          userId: split.userId,
-                        );
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${debtor.name} marked as settled.'),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        'Settle',
-                        style: TextStyle(
-                          color: AppColors.green,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-    }
-
-    if (rows.isEmpty) {
+    if (debts.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: const Text(
-          'Everything is settled in this lobby.',
-          style: TextStyle(
-            color: AppColors.greyText,
-            fontWeight: FontWeight.w600,
-          ),
+        child: const Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Color(0xFFD8FFD9),
+              child: Icon(Icons.check_rounded, color: AppColors.green),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Everything is balanced in this lobby.',
+                style: TextStyle(
+                  color: AppColors.greyText,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
 
-    return Column(children: rows);
+    return Column(
+      children: debts.map((debt) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 17,
+                backgroundColor: const Color(0xFFFFF0D0),
+                child: Text(
+                  debt.fromUser.name.isEmpty
+                      ? '?'
+                      : debt.fromUser.name[0].toUpperCase(),
+                  style: const TextStyle(
+                    color: AppColors.orange,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '${debt.fromUser.name.split(' ').first} owes ${debt.toUser.name.split(' ').first}',
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ),
+              Text(
+                '\$${debt.amount.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: AppColors.red,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
   }
 
   Widget _searchField() {

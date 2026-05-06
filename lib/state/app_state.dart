@@ -23,6 +23,22 @@ class FriendBalance {
   });
 }
 
+/// Clean final payment instruction after simplifying all expenses.
+/// Example:
+/// - Ram owes Nirajan $15
+/// - Sam owes Nirajan $20
+class SimplifiedDebt {
+  final AppUser fromUser;
+  final AppUser toUser;
+  final double amount;
+
+  const SimplifiedDebt({
+    required this.fromUser,
+    required this.toUser,
+    required this.amount,
+  });
+}
+
 /// Summary numbers for a single lobby/group.
 class LobbyBalanceSummary {
   final double totalSpent;
@@ -68,7 +84,7 @@ class AppState extends ChangeNotifier {
   // ---------------------------------------------------------------------------
 
   /// Finds a user by ID.
-  /// If user is missing, current user is returned as safe fallback.
+  /// If user is missing, current user is returned as a safe fallback.
   AppUser userById(String userId) {
     return users.firstWhere(
       (user) => user.id == userId,
@@ -76,11 +92,25 @@ class AppState extends ChangeNotifier {
     );
   }
 
+  /// Finds a lobby by ID.
+  /// Public because screens may need lobby name/details for expenses.
+  Lobby? lobbyById(String lobbyId) {
+    try {
+      return lobbies.firstWhere((lobby) => lobby.id == lobbyId);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// All lobbies where the current user is a member.
   List<Lobby> get currentUserLobbies {
-    return lobbies
+    final result = lobbies
         .where((lobby) => lobby.memberIds.contains(currentUser.id))
         .toList();
+
+    result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    return result;
   }
 
   /// Gets expenses for one lobby, newest first.
@@ -121,84 +151,67 @@ class AppState extends ChangeNotifier {
   // Balance calculations
   // ---------------------------------------------------------------------------
 
-  /// Total amount current user owes to other people.
+  /// Total net amount current user owes to other people.
+  /// Opposite payments cancel each other.
+  ///
+  /// Example:
+  /// - You owe John $10
+  /// - John owes you $10
+  /// Result: You owe $0
   double get totalYouOwe {
-    double total = 0;
-
-    for (final expense in expenses) {
-      if (expense.paidByUserId == currentUser.id) continue;
-
-      final currentUserSplit = _splitForUser(expense, currentUser.id);
-
-      if (currentUserSplit != null && !currentUserSplit.isPaid) {
-        total += currentUserSplit.amount;
-      }
-    }
-
-    return _roundMoney(total);
+    return _roundMoney(
+      friendBalances()
+          .where((balance) => !balance.owesYou)
+          .fold<double>(0, (sum, balance) => sum + balance.amount),
+    );
   }
 
-  /// Total amount other people owe current user.
+  /// Total net amount other people owe current user.
+  /// Opposite payments cancel each other.
   double get totalYouAreOwed {
-    double total = 0;
-
-    for (final expense in expenses) {
-      if (expense.paidByUserId != currentUser.id) continue;
-
-      for (final split in expense.splits) {
-        if (split.userId != currentUser.id && !split.isPaid) {
-          total += split.amount;
-        }
-      }
-    }
-
-    return _roundMoney(total);
+    return _roundMoney(
+      friendBalances()
+          .where((balance) => balance.owesYou)
+          .fold<double>(0, (sum, balance) => sum + balance.amount),
+    );
   }
 
-  /// Lobby-level summary.
+  /// Lobby-level summary using net balance.
+  ///
+  /// Important:
+  /// - Raw expenses stay in history.
+  /// - The summary shows the final net result.
+  /// - If two users paid equal opposite amounts, lobby becomes balanced.
   LobbyBalanceSummary lobbySummary(String lobbyId) {
     final lobbyExpenses = expensesByLobby(lobbyId);
 
     double totalSpent = 0;
-    double youOwe = 0;
-    double youAreOwed = 0;
 
     for (final expense in lobbyExpenses) {
       totalSpent += expense.amount;
-
-      final currentUserSplit = _splitForUser(expense, currentUser.id);
-
-      final currentUserDidNotPay = expense.paidByUserId != currentUser.id;
-
-      if (currentUserDidNotPay &&
-          currentUserSplit != null &&
-          !currentUserSplit.isPaid) {
-        youOwe += currentUserSplit.amount;
-      }
-
-      final currentUserPaid = expense.paidByUserId == currentUser.id;
-
-      if (currentUserPaid) {
-        for (final split in expense.splits) {
-          if (split.userId != currentUser.id && !split.isPaid) {
-            youAreOwed += split.amount;
-          }
-        }
-      }
     }
 
-    final roundedYouOwe = _roundMoney(youOwe);
-    final roundedYouAreOwed = _roundMoney(youAreOwed);
+    final netBalance = _netBalanceForUserInLobby(
+      lobbyId: lobbyId,
+      userId: currentUser.id,
+    );
+
+    final youOwe = netBalance < 0 ? netBalance.abs() : 0.0;
+    final youAreOwed = netBalance > 0 ? netBalance : 0.0;
 
     return LobbyBalanceSummary(
       totalSpent: _roundMoney(totalSpent),
-      youOwe: roundedYouOwe,
-      youAreOwed: roundedYouAreOwed,
-      isSettled: roundedYouOwe == 0 && roundedYouAreOwed == 0,
+      youOwe: _roundMoney(youOwe),
+      youAreOwed: _roundMoney(youAreOwed),
+      isSettled: _roundMoney(youOwe) == 0 && _roundMoney(youAreOwed) == 0,
     );
   }
 
-  /// Friend balance list for home screen.
+  /// Friend balance list for home/profile screen.
+  ///
+  /// This creates a net balance between the current user and every friend.
+  /// Positive value means the friend owes current user.
+  /// Negative value means current user owes the friend.
   List<FriendBalance> friendBalances() {
     final Map<String, double> balanceMap = {};
 
@@ -237,7 +250,98 @@ class AppState extends ChangeNotifier {
     return balances;
   }
 
+  /// Returns simplified final debts for one lobby.
+  ///
+  /// This keeps all expense history unchanged, but calculates the cleanest
+  /// current payment result.
+  ///
+  /// Example:
+  /// - A owes B $10
+  /// - B owes A $10
+  /// Result:
+  /// - No debt shown.
+  List<SimplifiedDebt> simplifiedDebtsForLobby(String lobbyId) {
+    final lobby = lobbyById(lobbyId);
+
+    if (lobby == null) return [];
+
+    final Map<String, double> netBalances = {};
+
+    for (final userId in lobby.memberIds) {
+      netBalances[userId] = 0;
+    }
+
+    final lobbyExpenses = expensesByLobby(lobbyId);
+
+    for (final expense in lobbyExpenses) {
+      final payerId = expense.paidByUserId;
+
+      for (final split in expense.splits) {
+        if (split.isPaid) continue;
+        if (split.userId == payerId) continue;
+
+        netBalances[split.userId] =
+            (netBalances[split.userId] ?? 0) - split.amount;
+
+        netBalances[payerId] = (netBalances[payerId] ?? 0) + split.amount;
+      }
+    }
+
+    final debtors = netBalances.entries
+        .where((entry) => _roundMoney(entry.value) < 0)
+        .map((entry) => MapEntry(entry.key, _roundMoney(entry.value.abs())))
+        .toList();
+
+    final creditors = netBalances.entries
+        .where((entry) => _roundMoney(entry.value) > 0)
+        .map((entry) => MapEntry(entry.key, _roundMoney(entry.value)))
+        .toList();
+
+    final results = <SimplifiedDebt>[];
+
+    int debtorIndex = 0;
+    int creditorIndex = 0;
+
+    while (debtorIndex < debtors.length && creditorIndex < creditors.length) {
+      final debtor = debtors[debtorIndex];
+      final creditor = creditors[creditorIndex];
+
+      final amount = debtor.value < creditor.value
+          ? debtor.value
+          : creditor.value;
+
+      if (_roundMoney(amount) > 0) {
+        results.add(
+          SimplifiedDebt(
+            fromUser: userById(debtor.key),
+            toUser: userById(creditor.key),
+            amount: _roundMoney(amount),
+          ),
+        );
+      }
+
+      debtors[debtorIndex] = MapEntry(
+        debtor.key,
+        _roundMoney(debtor.value - amount),
+      );
+
+      creditors[creditorIndex] = MapEntry(
+        creditor.key,
+        _roundMoney(creditor.value - amount),
+      );
+
+      if (debtors[debtorIndex].value <= 0) debtorIndex++;
+      if (creditors[creditorIndex].value <= 0) creditorIndex++;
+    }
+
+    return results;
+  }
+
   /// Text shown on expense cards.
+  ///
+  /// Note:
+  /// This still explains the specific expense, not the final lobby net.
+  /// Lobby-level net is handled by lobbySummary() and simplifiedDebtsForLobby().
   String expenseStatusText(Expense expense) {
     final currentUserPaid = expense.paidByUserId == currentUser.id;
     final currentUserSplit = _splitForUser(expense, currentUser.id);
@@ -458,7 +562,7 @@ class AppState extends ChangeNotifier {
     ExpenseCategory category = ExpenseCategory.other,
     String? note,
   }) {
-    final lobby = _lobbyById(lobbyId);
+    final lobby = lobbyById(lobbyId);
 
     if (lobby == null) return false;
     if (lobby.memberIds.isEmpty || amount <= 0 || title.trim().isEmpty) {
@@ -509,7 +613,7 @@ class AppState extends ChangeNotifier {
     ExpenseCategory category = ExpenseCategory.other,
     String? note,
   }) {
-    final lobby = _lobbyById(lobbyId);
+    final lobby = lobbyById(lobbyId);
 
     if (lobby == null) return false;
     if (title.trim().isEmpty || amount <= 0 || customSplits.isEmpty) {
@@ -616,12 +720,43 @@ class AppState extends ChangeNotifier {
   // Private helpers
   // ---------------------------------------------------------------------------
 
-  Lobby? _lobbyById(String lobbyId) {
-    try {
-      return lobbies.firstWhere((lobby) => lobby.id == lobbyId);
-    } catch (_) {
-      return null;
+  /// Calculates one user's net balance inside one lobby.
+  ///
+  /// Positive:
+  /// - Other users owe this user.
+  ///
+  /// Negative:
+  /// - This user owes other users.
+  ///
+  /// Zero:
+  /// - Balanced.
+  double _netBalanceForUserInLobby({
+    required String lobbyId,
+    required String userId,
+  }) {
+    double net = 0;
+
+    final lobbyExpenses = expensesByLobby(lobbyId);
+
+    for (final expense in lobbyExpenses) {
+      final userIsPayer = expense.paidByUserId == userId;
+
+      if (userIsPayer) {
+        for (final split in expense.splits) {
+          if (split.userId == userId || split.isPaid) continue;
+
+          net += split.amount;
+        }
+      } else {
+        final userSplit = _splitForUser(expense, userId);
+
+        if (userSplit != null && !userSplit.isPaid) {
+          net -= userSplit.amount;
+        }
+      }
     }
+
+    return _roundMoney(net);
   }
 
   ExpenseSplit? _splitForUser(Expense expense, String userId) {

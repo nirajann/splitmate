@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../models/app_user.dart';
 import '../models/expense.dart';
 import '../models/expense_split.dart';
 import '../models/lobby.dart';
@@ -12,6 +10,9 @@ import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../widgets/balance_box.dart';
 import '../widgets/friend_card.dart';
+import '../widgets/avatar_stack.dart';
+import '../widgets/category_bubble.dart';
+import '../widgets/status_pill.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -350,7 +351,7 @@ class HomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 78,
+        height: 62,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(22),
@@ -362,14 +363,20 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: AppColors.orange),
-            const SizedBox(height: 7),
-            Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
+            Icon(icon, color: AppColors.orange, size: 18),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 11,
+                ),
+              ),
             ),
           ],
         ),
@@ -387,7 +394,7 @@ class HomeScreen extends StatelessWidget {
     List<Lobby> lobbies,
   ) {
     return SizedBox(
-      height: 138,
+      height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -395,18 +402,15 @@ class HomeScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final lobby = lobbies[index];
           final summary = appState.lobbySummary(lobby.id);
+          final members = appState.membersByLobby(lobby);
+          final memberNames = members.map((user) => user.name).toList();
+          final debts = appState.simplifiedDebtsForLobby(lobby.id);
 
-          final balanceText = summary.youOwe > 0
+          final statusText = summary.youOwe > 0
               ? 'You owe ${_money(summary.youOwe)}'
               : summary.youAreOwed > 0
               ? 'Owed ${_money(summary.youAreOwed)}'
               : 'Settled';
-
-          final balanceColor = summary.youOwe > 0
-              ? AppColors.red
-              : summary.youAreOwed > 0
-              ? AppColors.green
-              : AppColors.greyText;
 
           return GestureDetector(
             onTap: () {
@@ -418,15 +422,15 @@ class HomeScreen extends StatelessWidget {
               );
             },
             child: Container(
-              width: 210,
+              width: 230,
               margin: const EdgeInsets.only(right: 12),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
                 color: AppColors.dark,
-                borderRadius: BorderRadius.circular(26),
+                borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.12),
+                    color: Colors.black.withValues(alpha: 0.11),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -437,20 +441,12 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const CircleAvatar(
-                        radius: 17,
-                        backgroundColor: Color(0xFFFFF0D0),
-                        child: Icon(
-                          Icons.groups_rounded,
-                          color: AppColors.orange,
-                          size: 18,
-                        ),
-                      ),
+                      AvatarStack(names: memberNames, size: 28, maxVisible: 3),
                       const Spacer(),
                       Text(
-                        '${lobby.memberIds.length} members',
+                        '${lobby.memberIds.length} people',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.65),
+                          color: Colors.white.withValues(alpha: 0.62),
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                         ),
@@ -465,24 +461,50 @@ class HomeScreen extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${_money(summary.totalSpent)} total',
+                    debts.isNotEmpty
+                        ? '${debts.first.fromUser.name.split(' ').first} owes ${debts.first.toUser.name.split(' ').first} ${_money(debts.first.amount)}'
+                        : '${_money(summary.totalSpent)} total',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.65),
-                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.60),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 7),
-                  Text(
-                    balanceText,
-                    style: TextStyle(
-                      color: balanceColor,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 12,
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: summary.youOwe > 0
+                          ? AppColors.redLight
+                          : summary.youAreOwed > 0
+                          ? AppColors.greenLight
+                          : const Color(0xFFF0EBDD),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      statusText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: summary.youOwe > 0
+                            ? AppColors.red
+                            : summary.youAreOwed > 0
+                            ? AppColors.green
+                            : AppColors.greyText,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 11,
+                      ),
                     ),
                   ),
                 ],
@@ -510,98 +532,94 @@ class HomeScreen extends StatelessWidget {
     final isPositive = appState.expenseIsPositiveForCurrentUser(expense);
     final statusParts = _splitStatus(status);
 
+    final pillTone = status == 'Settled up' || status == 'Not involved'
+        ? StatusPillTone.neutral
+        : isPositive
+        ? StatusPillTone.positive
+        : StatusPillTone.negative;
+
+    final memberNames = lobby == null
+        ? <String>[]
+        : appState.membersByLobby(lobby).map((user) => user.name).toList();
+
     return GestureDetector(
       onTap: () => _showExpenseDetails(context, appState, expense),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 13),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(26),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.045),
-              blurRadius: 14,
-              offset: const Offset(0, 7),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
-        child: Row(
+        child: Column(
           children: [
-            CircleAvatar(
-              radius: 23,
-              backgroundColor: const Color(0xFFFFF0D0),
-              child: Icon(
-                _categoryIcon(expense.category),
-                color: AppColors.orange,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    expense.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    '${lobby?.name ?? 'Unknown lobby'} • Paid by ${payer.name}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColors.greyText,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isPositive
-                          ? AppColors.greenLight
-                          : AppColors.redLight,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          statusParts.$1,
-                          style: TextStyle(
-                            color: isPositive ? AppColors.green : AppColors.red,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                          ),
+            Row(
+              children: [
+                CategoryBubble(category: expense.category, size: 46),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        expense.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14,
                         ),
-                        const Spacer(),
-                        Text(
-                          statusParts.$2,
-                          style: TextStyle(
-                            color: isPositive ? AppColors.green : AppColors.red,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                          ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${lobby?.name ?? 'Unknown lobby'} • Paid by ${payer.name}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.greyText,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      _money(expense.amount),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    if (memberNames.isNotEmpty)
+                      AvatarStack(names: memberNames, size: 24, maxVisible: 3),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(width: 10),
-            Text(
-              _money(expense.amount),
-              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: StatusPill(
+                    label: statusParts.$1,
+                    amount: statusParts.$2.isEmpty ? null : statusParts.$2,
+                    tone: pillTone,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -750,14 +768,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 18),
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor: const Color(0xFFFFF0D0),
-                    child: Icon(
-                      _categoryIcon(expense.category),
-                      color: AppColors.orange,
-                    ),
-                  ),
+                  CategoryBubble(category: expense.category, size: 46),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
