@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:splitmate/screens/profile_screen.dart';
 import '../theme/app_colors.dart';
 import 'home_screen.dart';
 import 'lobbies_screen.dart';
+import 'add_expense_screen.dart';
+import 'activity_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -15,10 +18,10 @@ class _MainShellState extends State<MainShell> {
 
   final pages = const [
     HomeScreen(),
-    PlaceholderScreen(title: 'Activity'),
-    PlaceholderScreen(title: 'Add Expense'),
+    ActivityScreen(),
+    AddExpenseScreen(),
     LobbiesScreen(),
-    PlaceholderScreen(title: 'Profile'),
+    ProfileScreen(),
   ];
 
   void changeTab(int index) {

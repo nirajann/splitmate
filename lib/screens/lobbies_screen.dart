@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../data/dummy_data.dart';
+import 'package:provider/provider.dart';
+
 import '../models/lobby.dart';
+import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import 'create_lobby_screen.dart';
 import 'lobby_detail_screen.dart';
@@ -17,9 +19,15 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredLobbies = DummyData.lobbies.where((lobby) {
-      return lobby.name.toLowerCase().contains(searchText.toLowerCase()) ||
-          lobby.description.toLowerCase().contains(searchText.toLowerCase());
+    final appState = context.watch<AppState>();
+
+    final filteredLobbies = appState.currentUserLobbies.where((lobby) {
+      final query = searchText.trim().toLowerCase();
+
+      if (query.isEmpty) return true;
+
+      return lobby.name.toLowerCase().contains(query) ||
+          lobby.description.toLowerCase().contains(query);
     }).toList();
 
     return Scaffold(
@@ -32,8 +40,8 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.orange,
         foregroundColor: Colors.white,
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const CreateLobbyScreen()),
           );
@@ -48,7 +56,7 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
             TextField(
               onChanged: (value) => setState(() => searchText = value),
               decoration: InputDecoration(
-                hintText: 'Search lobbies or expenses...',
+                hintText: 'Search lobbies...',
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.white,
@@ -58,12 +66,20 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
                 ),
               ),
             ),
+
             const SizedBox(height: 18),
+
             Expanded(
-              child: ListView.builder(
+              child: filteredLobbies.isEmpty
+                  ? _emptyState()
+                  : ListView.builder(
                 itemCount: filteredLobbies.length,
                 itemBuilder: (context, index) {
-                  return _lobbyCard(filteredLobbies[index]);
+                  return _lobbyCard(
+                    context: context,
+                    appState: appState,
+                    lobby: filteredLobbies[index],
+                  );
                 },
               ),
             ),
@@ -73,15 +89,20 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
     );
   }
 
-  Widget _lobbyCard(Lobby lobby) {
-    final expenses = DummyData.expensesByLobby(lobby.id);
-    final total = expenses.fold<double>(0, (sum, item) => sum + item.amount);
+  Widget _lobbyCard({
+    required BuildContext context,
+    required AppState appState,
+    required Lobby lobby,
+  }) {
+    final summary = appState.lobbySummary(lobby.id);
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => LobbyDetailScreen(lobby: lobby)),
+          MaterialPageRoute(
+            builder: (_) => LobbyDetailScreen(lobby: lobby),
+          ),
         );
       },
       child: Container(
@@ -104,7 +125,9 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
               backgroundColor: AppColors.orangeLight,
               child: Icon(Icons.groups, color: AppColors.dark),
             ),
+
             const SizedBox(width: 14),
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,25 +139,91 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
                       fontSize: 16,
                     ),
                   ),
+
                   Text(
                     lobby.description,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(color: AppColors.greyText),
                   ),
+
                   const SizedBox(height: 6),
+
                   Text(
-                    '${lobby.memberIds.length} members • \$${total.toStringAsFixed(2)} total',
+                    '${lobby.memberIds.length} members • \$${summary.totalSpent.toStringAsFixed(2)} total',
                     style: const TextStyle(
                       color: AppColors.orange,
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
                   ),
+
+                  if (summary.youOwe > 0 || summary.youAreOwed > 0) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      summary.youOwe > 0
+                          ? 'You owe \$${summary.youOwe.toStringAsFixed(2)}'
+                          : 'You are owed \$${summary.youAreOwed.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: summary.youOwe > 0
+                            ? AppColors.red
+                            : AppColors.green,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Settled up',
+                      style: TextStyle(
+                        color: AppColors.greyText,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
+
             const Icon(Icons.chevron_right),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyState() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.groups_rounded,
+              color: AppColors.orange,
+              size: 42,
+            ),
+            SizedBox(height: 12),
+            Text(
+              'No lobbies found',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 18,
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              'Create your first lobby to start splitting expenses.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.greyText),
+            ),
           ],
         ),
       ),

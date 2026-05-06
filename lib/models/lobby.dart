@@ -17,6 +17,26 @@ class Lobby {
     required this.createdAt,
   });
 
+  Lobby copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? createdByUserId,
+    List<String>? memberIds,
+    String? inviteCode,
+    DateTime? createdAt,
+  }) {
+    return Lobby(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      createdByUserId: createdByUserId ?? this.createdByUserId,
+      memberIds: memberIds ?? this.memberIds,
+      inviteCode: inviteCode ?? this.inviteCode,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   factory Lobby.fromMap(Map<String, dynamic> map) {
     return Lobby(
       id: map['id'] ?? '',

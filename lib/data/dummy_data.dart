@@ -8,19 +8,19 @@ class DummyData {
   static final users = [
     AppUser(
       id: 'u1',
-      name: 'Prince Sah',
-      email: 'prince@example.com',
+      name: 'Nirajan gautam',
+      email: 'nirajangautam@gmail.com',
       phone: '+61400000001',
     ),
     AppUser(
       id: 'u2',
-      name: 'Kashish Sah',
-      email: 'kashish@example.com',
+      name: 'prince Sah',
+      email: 'prince@example.com',
       phone: '+61400000002',
     ),
     AppUser(
       id: 'u3',
-      name: 'Wade Howard',
+      name: 'Shubham gadt',
       email: 'wade@example.com',
     ),
     AppUser(
@@ -52,47 +52,54 @@ class DummyData {
   ];
 
   static final expenses = [
+  Expense(
+  id: 'e1',
+  lobbyId: 'l1',
+  title: 'Electricity Bill',
+  amount: 210,
+  paidByUserId: 'u2',
+  category: ExpenseCategory.bills,
+  createdAt: DateTime(2026, 5, 3),
+  updatedAt: DateTime(2026, 5, 3),
+  splitType: SplitType.equal,
+  status: ExpenseStatus.active,
+  splits: [
+  ExpenseSplit(userId: 'u1', amount: 70),
+  ExpenseSplit(userId: 'u2', amount: 70, isPaid: true),
+  ExpenseSplit(userId: 'u3', amount: 70),
+  ],
+  ),Expense(
+  id: 'e1',
+  lobbyId: 'l1',
+  title: 'Electricity Bill',
+  amount: 210,
+  paidByUserId: 'u2',
+  category: ExpenseCategory.bills,
+  createdAt: DateTime(2026, 5, 3),
+  updatedAt: DateTime(2026, 5, 3),
+  splitType: SplitType.equal,
+  status: ExpenseStatus.active,
+  splits: [
+  ExpenseSplit(userId: 'u1', amount: 70),
+  ExpenseSplit(userId: 'u2', amount: 70, isPaid: true),
+  ExpenseSplit(userId: 'u3', amount: 70),
+  ],
+  ),
     Expense(
       id: 'e1',
       lobbyId: 'l1',
-      title: 'Groceries',
-      amount: 120.00,
-      paidByUserId: 'u1',
-      category: ExpenseCategory.food,
-      createdAt: DateTime(2026, 5, 2),
-      splits: [
-        ExpenseSplit(userId: 'u1', amount: 40),
-        ExpenseSplit(userId: 'u2', amount: 40),
-        ExpenseSplit(userId: 'u3', amount: 40),
-      ],
-      note: 'Weekly grocery shopping.',
-    ),
-    Expense(
-      id: 'e2',
-      lobbyId: 'l1',
       title: 'Electricity Bill',
-      amount: 210.00,
+      amount: 210,
       paidByUserId: 'u2',
       category: ExpenseCategory.bills,
       createdAt: DateTime(2026, 5, 3),
+      updatedAt: DateTime(2026, 5, 3),
+      splitType: SplitType.equal,
+      status: ExpenseStatus.active,
       splits: [
         ExpenseSplit(userId: 'u1', amount: 70),
-        ExpenseSplit(userId: 'u2', amount: 70),
+        ExpenseSplit(userId: 'u2', amount: 70, isPaid: true),
         ExpenseSplit(userId: 'u3', amount: 70),
-      ],
-    ),
-    Expense(
-      id: 'e3',
-      lobbyId: 'l2',
-      title: 'Hotel Booking',
-      amount: 600.00,
-      paidByUserId: 'u1',
-      category: ExpenseCategory.travel,
-      createdAt: DateTime(2026, 5, 3),
-      splits: [
-        ExpenseSplit(userId: 'u1', amount: 200),
-        ExpenseSplit(userId: 'u2', amount: 200),
-        ExpenseSplit(userId: 'u4', amount: 200),
       ],
     ),
   ];
@@ -103,7 +110,7 @@ class DummyData {
       lobbyId: 'l1',
       userId: 'u1',
       type: ActivityType.lobbyCreated,
-      message: 'Prince created Sydney Roommates lobby.',
+      message: 'Nirajan created Sydney Roommates lobby.',
       createdAt: DateTime(2026, 5, 1),
     ),
     ActivityLog(
@@ -111,7 +118,7 @@ class DummyData {
       lobbyId: 'l1',
       userId: 'u1',
       type: ActivityType.expenseAdded,
-      message: 'Prince added Groceries expense.',
+      message: 'Nirajan added Groceries expense.',
       createdAt: DateTime(2026, 5, 2),
     ),
     ActivityLog(
@@ -119,7 +126,7 @@ class DummyData {
       lobbyId: 'l2',
       userId: 'u1',
       type: ActivityType.expenseAdded,
-      message: 'Prince added Hotel Booking expense.',
+      message: 'Nirajan added Hotel Booking expense.',
       createdAt: DateTime(2026, 5, 3),
     ),
   ];
