@@ -73,15 +73,15 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
               child: filteredLobbies.isEmpty
                   ? _emptyState()
                   : ListView.builder(
-                itemCount: filteredLobbies.length,
-                itemBuilder: (context, index) {
-                  return _lobbyCard(
-                    context: context,
-                    appState: appState,
-                    lobby: filteredLobbies[index],
-                  );
-                },
-              ),
+                      itemCount: filteredLobbies.length,
+                      itemBuilder: (context, index) {
+                        return _lobbyCard(
+                          context: context,
+                          appState: appState,
+                          lobby: filteredLobbies[index],
+                        );
+                      },
+                    ),
             ),
           ],
         ),
@@ -100,9 +100,7 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => LobbyDetailScreen(lobby: lobby),
-          ),
+          MaterialPageRoute(builder: (_) => LobbyDetailScreen(lobby: lobby)),
         );
       },
       child: Container(
@@ -205,18 +203,11 @@ class _LobbiesScreenState extends State<LobbiesScreen> {
         child: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.groups_rounded,
-              color: AppColors.orange,
-              size: 42,
-            ),
+            Icon(Icons.groups_rounded, color: AppColors.orange, size: 42),
             SizedBox(height: 12),
             Text(
               'No lobbies found',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
             ),
             SizedBox(height: 6),
             Text(

@@ -31,7 +31,7 @@ class ActivityLog {
       lobbyId: map['lobbyId'] ?? '',
       userId: map['userId'] ?? '',
       type: ActivityType.values.firstWhere(
-            (e) => e.name == map['type'],
+        (e) => e.name == map['type'],
         orElse: () => ActivityType.expenseAdded,
       ),
       message: map['message'] ?? '',

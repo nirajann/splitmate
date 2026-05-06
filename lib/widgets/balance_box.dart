@@ -5,11 +5,7 @@ class BalanceBox extends StatelessWidget {
   final String amount;
   final String label;
 
-  const BalanceBox({
-    super.key,
-    required this.amount,
-    required this.label,
-  });
+  const BalanceBox({super.key, required this.amount, required this.label});
 
   @override
   Widget build(BuildContext context) {

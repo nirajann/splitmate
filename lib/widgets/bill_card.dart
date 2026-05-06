@@ -56,11 +56,7 @@ class BillCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(17),
                   ),
                   child: Center(
-                    child: Icon(
-                      icon,
-                      color: AppColors.orange,
-                      size: 23,
-                    ),
+                    child: Icon(icon, color: AppColors.orange, size: 23),
                   ),
                 ),
                 const SizedBox(width: 12),

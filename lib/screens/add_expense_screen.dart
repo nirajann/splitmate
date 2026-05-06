@@ -60,7 +60,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       amount: amount,
       paidByUserId: selectedPayerId!,
       category: selectedCategory,
-      note: noteController.text.trim().isEmpty ? null : noteController.text.trim(),
+      note: noteController.text.trim().isEmpty
+          ? null
+          : noteController.text.trim(),
     );
 
     titleController.clear();
@@ -75,9 +77,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   }
 
   void _message(String text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   @override
@@ -121,139 +121,142 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 padding: const EdgeInsets.fromLTRB(22, 24, 22, 95),
                 decoration: const BoxDecoration(
                   color: Color(0xFFFFFAF0),
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(34),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
                 ),
                 child: lobbies.isEmpty
                     ? _emptyState()
                     : ListView(
-                  children: [
-                    _label('Select Lobby'),
-                    _card(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: selectedLobbyId,
-                          isExpanded: true,
-                          items: lobbies.map((lobby) {
-                            return DropdownMenuItem(
-                              value: lobby.id,
-                              child: Text(lobby.name),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedLobbyId = value;
-                              selectedPayerId = null;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    _label('Expense Title'),
-                    _input(
-                      controller: titleController,
-                      hint: 'Example: Dinner, Hotel, Electricity',
-                      icon: Icons.receipt_long_rounded,
-                    ),
-                    const SizedBox(height: 16),
-
-                    _label('Amount'),
-                    _input(
-                      controller: amountController,
-                      hint: '0.00',
-                      icon: Icons.attach_money_rounded,
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SizedBox(height: 16),
-
-                    _label('Paid By'),
-                    _card(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: selectedPayerId,
-                          isExpanded: true,
-                          items: members.map<DropdownMenuItem<String>>((user) {
-                            return DropdownMenuItem<String>(
-                              value: user.id,
-                              child: Text(user.name),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() => selectedPayerId = value);
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    _label('Category'),
-                    _card(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<ExpenseCategory>(
-                          value: selectedCategory,
-                          isExpanded: true,
-                          items: ExpenseCategory.values.map((category) {
-                            return DropdownMenuItem(
-                              value: category,
-                              child: Text(_categoryName(category)),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value == null) return;
-                            setState(() => selectedCategory = value);
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    _label('Note'),
-                  TextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: '0.00',
-                      prefixIcon: const Icon(Icons.attach_money_rounded, color: AppColors.orange),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                    const SizedBox(height: 24),
-
-                    _previewCard(appState),
-                    const SizedBox(height: 22),
-
-                    SizedBox(
-                      height: 54,
-                      child: ElevatedButton(
-                        onPressed: () => _saveExpense(appState),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.orange,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                        children: [
+                          _label('Select Lobby'),
+                          _card(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: selectedLobbyId,
+                                isExpanded: true,
+                                items: lobbies.map((lobby) {
+                                  return DropdownMenuItem(
+                                    value: lobby.id,
+                                    child: Text(lobby.name),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedLobbyId = value;
+                                    selectedPayerId = null;
+                                  });
+                                },
+                              ),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Add Expense',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
+                          const SizedBox(height: 16),
+
+                          _label('Expense Title'),
+                          _input(
+                            controller: titleController,
+                            hint: 'Example: Dinner, Hotel, Electricity',
+                            icon: Icons.receipt_long_rounded,
                           ),
-                        ),
+                          const SizedBox(height: 16),
+
+                          _label('Amount'),
+                          _input(
+                            controller: amountController,
+                            hint: '0.00',
+                            icon: Icons.attach_money_rounded,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(height: 16),
+
+                          _label('Paid By'),
+                          _card(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: selectedPayerId,
+                                isExpanded: true,
+                                items: members.map<DropdownMenuItem<String>>((
+                                  user,
+                                ) {
+                                  return DropdownMenuItem<String>(
+                                    value: user.id,
+                                    child: Text(user.name),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() => selectedPayerId = value);
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          _label('Category'),
+                          _card(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<ExpenseCategory>(
+                                value: selectedCategory,
+                                isExpanded: true,
+                                items: ExpenseCategory.values.map((category) {
+                                  return DropdownMenuItem(
+                                    value: category,
+                                    child: Text(_categoryName(category)),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() => selectedCategory = value);
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          _label('Note'),
+                          TextField(
+                            controller: amountController,
+                            keyboardType: TextInputType.number,
+                            onChanged: (_) => setState(() {}),
+                            decoration: InputDecoration(
+                              hintText: '0.00',
+                              prefixIcon: const Icon(
+                                Icons.attach_money_rounded,
+                                color: AppColors.orange,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          _previewCard(appState),
+                          const SizedBox(height: 22),
+
+                          SizedBox(
+                            height: 54,
+                            child: ElevatedButton(
+                              onPressed: () => _saveExpense(appState),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.orange,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: const Text(
+                                'Add Expense',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ],
@@ -270,11 +273,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           CircleAvatar(
             radius: 18,
             backgroundColor: Colors.white,
-            child: Icon(
-              Icons.add_rounded,
-              color: AppColors.orange,
-              size: 25,
-            ),
+            child: Icon(Icons.add_rounded, color: AppColors.orange, size: 25),
           ),
           SizedBox(width: 10),
           Text(
@@ -295,10 +294,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(
-          fontWeight: FontWeight.w900,
-          fontSize: 14,
-        ),
+        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
       ),
     );
   }
@@ -341,8 +337,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final selectedLobby = selectedLobbyId == null
         ? null
         : appState.currentUserLobbies
-        .where((lobby) => lobby.id == selectedLobbyId)
-        .firstOrNull;
+              .where((lobby) => lobby.id == selectedLobbyId)
+              .firstOrNull;
 
     final memberCount = selectedLobby?.memberIds.length ?? 0;
     final splitAmount = memberCount == 0 ? 0 : amount / memberCount;
@@ -384,18 +380,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         child: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.groups_rounded,
-              color: AppColors.orange,
-              size: 42,
-            ),
+            Icon(Icons.groups_rounded, color: AppColors.orange, size: 42),
             SizedBox(height: 12),
             Text(
               'No lobbies yet',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
             ),
             SizedBox(height: 6),
             Text(

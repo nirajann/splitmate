@@ -13,20 +13,9 @@ enum ExpenseCategory {
   other,
 }
 
-enum SplitType {
-  equal,
-  exact,
-  percentage,
-  shares,
-  itemized,
-}
+enum SplitType { equal, exact, percentage, shares, itemized }
 
-enum ExpenseStatus {
-  active,
-  partiallySettled,
-  settled,
-  cancelled,
-}
+enum ExpenseStatus { active, partiallySettled, settled, cancelled }
 
 class Expense {
   final String id;
@@ -81,17 +70,21 @@ class Expense {
   }
 
   double get unpaidAmount {
-    return splits.where((split) {
-      if (split.userId == paidByUserId) return false;
-      return !split.isPaid;
-    }).fold<double>(0, (sum, split) => sum + split.amount);
+    return splits
+        .where((split) {
+          if (split.userId == paidByUserId) return false;
+          return !split.isPaid;
+        })
+        .fold<double>(0, (sum, split) => sum + split.amount);
   }
 
   double get paidAmount {
-    return splits.where((split) {
-      if (split.userId == paidByUserId) return false;
-      return split.isPaid;
-    }).fold<double>(0, (sum, split) => sum + split.amount);
+    return splits
+        .where((split) {
+          if (split.userId == paidByUserId) return false;
+          return split.isPaid;
+        })
+        .fold<double>(0, (sum, split) => sum + split.amount);
   }
 
   Expense copyWith({
@@ -135,10 +128,7 @@ class Expense {
       newStatus = ExpenseStatus.active;
     }
 
-    return copyWith(
-      status: newStatus,
-      updatedAt: DateTime.now(),
-    );
+    return copyWith(status: newStatus, updatedAt: DateTime.now());
   }
 
   factory Expense.fromMap(Map<String, dynamic> map) {
@@ -149,15 +139,15 @@ class Expense {
       amount: (map['amount'] ?? 0).toDouble(),
       paidByUserId: map['paidByUserId'] ?? '',
       category: ExpenseCategory.values.firstWhere(
-            (e) => e.name == map['category'],
+        (e) => e.name == map['category'],
         orElse: () => ExpenseCategory.other,
       ),
       splitType: SplitType.values.firstWhere(
-            (e) => e.name == map['splitType'],
+        (e) => e.name == map['splitType'],
         orElse: () => SplitType.equal,
       ),
       status: ExpenseStatus.values.firstWhere(
-            (e) => e.name == map['status'],
+        (e) => e.name == map['status'],
         orElse: () => ExpenseStatus.active,
       ),
       createdAt: map['createdAt'] == null

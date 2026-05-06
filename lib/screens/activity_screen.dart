@@ -68,10 +68,7 @@ class ActivityScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 18,
                     backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.history_rounded,
-                      color: AppColors.orange,
-                    ),
+                    child: Icon(Icons.history_rounded, color: AppColors.orange),
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -92,74 +89,73 @@ class ActivityScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(22, 24, 22, 95),
                 decoration: const BoxDecoration(
                   color: Color(0xFFFFFAF0),
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(34),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
                 ),
                 child: logs.isEmpty
                     ? _emptyState()
                     : ListView.builder(
-                  itemCount: logs.length,
-                  itemBuilder: (context, index) {
-                    final log = logs[index];
-                    final lobby = appState.lobbies
-                        .where((item) => item.id == log.lobbyId)
-                        .firstOrNull;
+                        itemCount: logs.length,
+                        itemBuilder: (context, index) {
+                          final log = logs[index];
+                          final lobby = appState.lobbies
+                              .where((item) => item.id == log.lobbyId)
+                              .firstOrNull;
 
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 14),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.045),
-                            blurRadius: 14,
-                            offset: const Offset(0, 7),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 23,
-                            backgroundColor: const Color(0xFFFFF0D0),
-                            child: Icon(
-                              _icon(log.type),
-                              color: _iconColor(log.type),
-                              size: 22,
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 14),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.045),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 7),
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 13),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               children: [
-                                Text(
-                                  log.message,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 13.5,
+                                CircleAvatar(
+                                  radius: 23,
+                                  backgroundColor: const Color(0xFFFFF0D0),
+                                  child: Icon(
+                                    _icon(log.type),
+                                    color: _iconColor(log.type),
+                                    size: 22,
                                   ),
                                 ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  '${lobby?.name ?? 'Unknown lobby'} • ${_date(log.createdAt)}',
-                                  style: const TextStyle(
-                                    color: AppColors.greyText,
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w500,
+                                const SizedBox(width: 13),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        log.message,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 13.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        '${lobby?.name ?? 'Unknown lobby'} • ${_date(log.createdAt)}',
+                                        style: const TextStyle(
+                                          color: AppColors.greyText,
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ),
           ],
@@ -179,18 +175,11 @@ class ActivityScreen extends StatelessWidget {
         child: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.history_rounded,
-              color: AppColors.orange,
-              size: 42,
-            ),
+            Icon(Icons.history_rounded, color: AppColors.orange, size: 42),
             SizedBox(height: 12),
             Text(
               'No activity yet',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
             ),
             SizedBox(height: 6),
             Text(

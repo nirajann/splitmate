@@ -165,10 +165,7 @@ class ProfileScreen extends StatelessWidget {
           const CircleAvatar(
             radius: 18,
             backgroundColor: Colors.white,
-            child: Icon(
-              Icons.person_rounded,
-              color: AppColors.orange,
-            ),
+            child: Icon(Icons.person_rounded, color: AppColors.orange),
           ),
           const SizedBox(width: 10),
           const Expanded(
@@ -281,10 +278,7 @@ class ProfileScreen extends StatelessWidget {
   Widget _sectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w900,
-      ),
+      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
     );
   }
 
@@ -303,10 +297,7 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 20,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
           ),
           const SizedBox(height: 3),
           Text(
@@ -384,8 +375,9 @@ class ProfileScreen extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 23,
-              backgroundColor:
-              friend.owesYou ? AppColors.greenLight : AppColors.redLight,
+              backgroundColor: friend.owesYou
+                  ? AppColors.greenLight
+                  : AppColors.redLight,
               child: Text(
                 initial,
                 style: TextStyle(
@@ -429,10 +421,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showFriendProfile(
-      BuildContext context,
-      AppState appState,
-      FriendBalance friend,
-      ) {
+    BuildContext context,
+    AppState appState,
+    FriendBalance friend,
+  ) {
     final user = friend.user;
     final relatedExpenses = appState.expenses.where((expense) {
       final hasFriend = expense.splits.any((split) => split.userId == user.id);
@@ -535,10 +527,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 22),
               const Text(
                 'Related expenses',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               ),
               const SizedBox(height: 12),
               if (relatedExpenses.isEmpty)
@@ -568,16 +557,12 @@ class ProfileScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                             expense.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w800),
                           ),
                         ),
                         Text(
                           _money(expense.amount),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                          ),
+                          style: const TextStyle(fontWeight: FontWeight.w900),
                         ),
                       ],
                     ),
@@ -606,8 +591,9 @@ class ProfileScreen extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor:
-              danger ? AppColors.redLight : const Color(0xFFFFF0D0),
+              backgroundColor: danger
+                  ? AppColors.redLight
+                  : const Color(0xFFFFF0D0),
               child: Icon(
                 icon,
                 color: danger ? AppColors.red : AppColors.orange,

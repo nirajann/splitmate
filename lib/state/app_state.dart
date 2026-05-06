@@ -46,10 +46,7 @@ class CustomSplitInput {
   final String userId;
   final double amount;
 
-  const CustomSplitInput({
-    required this.userId,
-    required this.amount,
-  });
+  const CustomSplitInput({required this.userId, required this.amount});
 }
 
 /// Main local state manager for SplitMate.
@@ -62,8 +59,9 @@ class AppState extends ChangeNotifier {
   final List<AppUser> users = List<AppUser>.from(DummyData.users);
   final List<Lobby> lobbies = List<Lobby>.from(DummyData.lobbies);
   final List<Expense> expenses = List<Expense>.from(DummyData.expenses);
-  final List<ActivityLog> activityLogs =
-  List<ActivityLog>.from(DummyData.activityLogs);
+  final List<ActivityLog> activityLogs = List<ActivityLog>.from(
+    DummyData.activityLogs,
+  );
 
   // ---------------------------------------------------------------------------
   // Basic getters
@@ -73,7 +71,7 @@ class AppState extends ChangeNotifier {
   /// If user is missing, current user is returned as safe fallback.
   AppUser userById(String userId) {
     return users.firstWhere(
-          (user) => user.id == userId,
+      (user) => user.id == userId,
       orElse: () => currentUser,
     );
   }
@@ -87,8 +85,9 @@ class AppState extends ChangeNotifier {
 
   /// Gets expenses for one lobby, newest first.
   List<Expense> expensesByLobby(String lobbyId) {
-    final result =
-    expenses.where((expense) => expense.lobbyId == lobbyId).toList();
+    final result = expenses
+        .where((expense) => expense.lobbyId == lobbyId)
+        .toList();
 
     result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
@@ -226,11 +225,11 @@ class AppState extends ChangeNotifier {
         .where((entry) => _roundMoney(entry.value) != 0)
         .map(
           (entry) => FriendBalance(
-        user: userById(entry.key),
-        amount: _roundMoney(entry.value.abs()),
-        owesYou: entry.value > 0,
-      ),
-    )
+            user: userById(entry.key),
+            amount: _roundMoney(entry.value.abs()),
+            owesYou: entry.value > 0,
+          ),
+        )
         .toList();
 
     balances.sort((a, b) => b.amount.compareTo(a.amount));
@@ -530,7 +529,7 @@ class AppState extends ChangeNotifier {
 
     final customTotal = validSplits.fold<double>(
       0,
-          (sum, split) => sum + split.amount,
+      (sum, split) => sum + split.amount,
     );
 
     if (!_moneyEquals(customTotal, amount)) {
@@ -567,12 +566,10 @@ class AppState extends ChangeNotifier {
   ///
   /// This does not delete the original expense.
   /// It keeps the history and updates the balance.
-  bool settleSplit({
-    required String expenseId,
-    required String userId,
-  }) {
-    final expenseIndex =
-    expenses.indexWhere((expense) => expense.id == expenseId);
+  bool settleSplit({required String expenseId, required String userId}) {
+    final expenseIndex = expenses.indexWhere(
+      (expense) => expense.id == expenseId,
+    );
 
     if (expenseIndex == -1) return false;
 
@@ -588,20 +585,14 @@ class AppState extends ChangeNotifier {
 
     final updatedSplits = expense.splits.map((split) {
       if (split.userId == userId) {
-        return split.copyWith(
-          isPaid: true,
-          paidAt: now,
-        );
+        return split.copyWith(isPaid: true, paidAt: now);
       }
 
       return split;
     }).toList();
 
     final updatedExpense = expense
-        .copyWith(
-      splits: updatedSplits,
-      updatedAt: now,
-    )
+        .copyWith(splits: updatedSplits, updatedAt: now)
         .updateStatusFromSplits();
 
     expenses[expenseIndex] = updatedExpense;
@@ -675,7 +666,7 @@ class AppState extends ChangeNotifier {
       lobbyId: lobbyId,
       type: ActivityType.expenseAdded,
       message:
-      '${currentUser.name} added $cleanTitle expense of \$${amount.toStringAsFixed(2)}.',
+          '${currentUser.name} added $cleanTitle expense of \$${amount.toStringAsFixed(2)}.',
       createdAt: createdAt,
     );
 

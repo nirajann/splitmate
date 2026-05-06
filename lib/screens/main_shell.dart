@@ -114,10 +114,7 @@ class _MainShellState extends State<MainShell> {
 class PlaceholderScreen extends StatelessWidget {
   final String title;
 
-  const PlaceholderScreen({
-    super.key,
-    required this.title,
-  });
+  const PlaceholderScreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -127,10 +124,7 @@ class PlaceholderScreen extends StatelessWidget {
       child: Center(
         child: Text(
           title,
-          style: const TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
-          ),
+          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
         ),
       ),
     );

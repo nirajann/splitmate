@@ -18,16 +18,8 @@ class DummyData {
       email: 'prince@example.com',
       phone: '+61400000002',
     ),
-    AppUser(
-      id: 'u3',
-      name: 'Shubham gadt',
-      email: 'wade@example.com',
-    ),
-    AppUser(
-      id: 'u4',
-      name: 'Guy Warren',
-      email: 'guy@example.com',
-    ),
+    AppUser(id: 'u3', name: 'Shubham gadt', email: 'wade@example.com'),
+    AppUser(id: 'u4', name: 'Guy Warren', email: 'guy@example.com'),
   ];
 
   static final lobbies = [
@@ -52,39 +44,40 @@ class DummyData {
   ];
 
   static final expenses = [
-  Expense(
-  id: 'e1',
-  lobbyId: 'l1',
-  title: 'Electricity Bill',
-  amount: 210,
-  paidByUserId: 'u2',
-  category: ExpenseCategory.bills,
-  createdAt: DateTime(2026, 5, 3),
-  updatedAt: DateTime(2026, 5, 3),
-  splitType: SplitType.equal,
-  status: ExpenseStatus.active,
-  splits: [
-  ExpenseSplit(userId: 'u1', amount: 70),
-  ExpenseSplit(userId: 'u2', amount: 70, isPaid: true),
-  ExpenseSplit(userId: 'u3', amount: 70),
-  ],
-  ),Expense(
-  id: 'e1',
-  lobbyId: 'l1',
-  title: 'Electricity Bill',
-  amount: 210,
-  paidByUserId: 'u2',
-  category: ExpenseCategory.bills,
-  createdAt: DateTime(2026, 5, 3),
-  updatedAt: DateTime(2026, 5, 3),
-  splitType: SplitType.equal,
-  status: ExpenseStatus.active,
-  splits: [
-  ExpenseSplit(userId: 'u1', amount: 70),
-  ExpenseSplit(userId: 'u2', amount: 70, isPaid: true),
-  ExpenseSplit(userId: 'u3', amount: 70),
-  ],
-  ),
+    Expense(
+      id: 'e1',
+      lobbyId: 'l1',
+      title: 'Electricity Bill',
+      amount: 210,
+      paidByUserId: 'u2',
+      category: ExpenseCategory.bills,
+      createdAt: DateTime(2026, 5, 3),
+      updatedAt: DateTime(2026, 5, 3),
+      splitType: SplitType.equal,
+      status: ExpenseStatus.active,
+      splits: [
+        ExpenseSplit(userId: 'u1', amount: 70),
+        ExpenseSplit(userId: 'u2', amount: 70, isPaid: true),
+        ExpenseSplit(userId: 'u3', amount: 70),
+      ],
+    ),
+    Expense(
+      id: 'e1',
+      lobbyId: 'l1',
+      title: 'Electricity Bill',
+      amount: 210,
+      paidByUserId: 'u2',
+      category: ExpenseCategory.bills,
+      createdAt: DateTime(2026, 5, 3),
+      updatedAt: DateTime(2026, 5, 3),
+      splitType: SplitType.equal,
+      status: ExpenseStatus.active,
+      splits: [
+        ExpenseSplit(userId: 'u1', amount: 70),
+        ExpenseSplit(userId: 'u2', amount: 70, isPaid: true),
+        ExpenseSplit(userId: 'u3', amount: 70),
+      ],
+    ),
     Expense(
       id: 'e1',
       lobbyId: 'l1',
@@ -143,7 +136,7 @@ class DummyData {
 
   static AppUser userById(String userId) {
     return users.firstWhere(
-          (user) => user.id == userId,
+      (user) => user.id == userId,
       orElse: () => users.first,
     );
   }

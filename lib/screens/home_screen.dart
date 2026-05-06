@@ -136,9 +136,7 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(20, 22, 20, 95),
                 decoration: const BoxDecoration(
                   color: Color(0xFFFFFAF0),
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(34),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
                 ),
                 child: ListView(
                   physics: const BouncingScrollPhysics(),
@@ -172,10 +170,7 @@ class HomeScreen extends StatelessWidget {
 
                     const SizedBox(height: 22),
 
-                    _sectionTitle(
-                      title: 'Pending Actions',
-                      action: '',
-                    ),
+                    _sectionTitle(title: 'Pending Actions', action: ''),
                     const SizedBox(height: 12),
 
                     if (pendingExpenses.isEmpty)
@@ -191,17 +186,15 @@ class HomeScreen extends StatelessWidget {
 
                     const SizedBox(height: 22),
 
-                    _sectionTitle(
-                      title: 'Recent Expenses',
-                      action: '',
-                    ),
+                    _sectionTitle(title: 'Recent Expenses', action: ''),
                     const SizedBox(height: 12),
 
                     if (recentExpenses.isEmpty)
                       _emptyCard(
                         icon: Icons.receipt_long_rounded,
                         title: 'No expenses yet',
-                        message: 'Add your first bill, food, rent, or trip expense.',
+                        message:
+                            'Add your first bill, food, rent, or trip expense.',
                       )
                     else
                       ...recentExpenses.take(4).map((expense) {
@@ -210,17 +203,15 @@ class HomeScreen extends StatelessWidget {
 
                     const SizedBox(height: 22),
 
-                    _sectionTitle(
-                      title: 'Friends',
-                      action: '',
-                    ),
+                    _sectionTitle(title: 'Friends', action: ''),
                     const SizedBox(height: 12),
 
                     if (friends.isEmpty)
                       _emptyCard(
                         icon: Icons.people_alt_rounded,
                         title: 'No friend balances',
-                        message: 'Friend balances will appear after shared expenses.',
+                        message:
+                            'Friend balances will appear after shared expenses.',
                       )
                     else
                       ...friends.take(4).map((friend) {
@@ -251,8 +242,9 @@ class HomeScreen extends StatelessWidget {
 
   Widget _header(BuildContext context, AppState appState) {
     final currentUser = appState.currentUser;
-    final initial =
-    currentUser.name.isNotEmpty ? currentUser.name[0].toUpperCase() : 'U';
+    final initial = currentUser.name.isNotEmpty
+        ? currentUser.name[0].toUpperCase()
+        : 'U';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 14, 24, 0),
@@ -312,9 +304,7 @@ class HomeScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const AddExpenseScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const AddExpenseScreen()),
               );
             },
           ),
@@ -327,9 +317,7 @@ class HomeScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const CreateLobbyScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const CreateLobbyScreen()),
               );
             },
           ),
@@ -342,7 +330,9 @@ class HomeScreen extends StatelessWidget {
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Invite link will be connected with Firebase later.'),
+                  content: Text(
+                    'Invite link will be connected with Firebase later.',
+                  ),
                 ),
               );
             },
@@ -379,10 +369,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 7),
             Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
             ),
           ],
         ),
@@ -395,10 +382,10 @@ class HomeScreen extends StatelessWidget {
   // ---------------------------------------------------------------------------
 
   Widget _lobbyScroller(
-      BuildContext context,
-      AppState appState,
-      List<Lobby> lobbies,
-      ) {
+    BuildContext context,
+    AppState appState,
+    List<Lobby> lobbies,
+  ) {
     return SizedBox(
       height: 138,
       child: ListView.builder(
@@ -512,10 +499,10 @@ class HomeScreen extends StatelessWidget {
   // ---------------------------------------------------------------------------
 
   Widget _pendingActionCard(
-      BuildContext context,
-      AppState appState,
-      Expense expense,
-      ) {
+    BuildContext context,
+    AppState appState,
+    Expense expense,
+  ) {
     final lobby = _lobbyForExpense(appState, expense);
     final status = appState.expenseStatusText(expense);
     final payer = appState.userById(expense.paidByUserId);
@@ -591,8 +578,7 @@ class HomeScreen extends StatelessWidget {
                         Text(
                           statusParts.$1,
                           style: TextStyle(
-                            color:
-                            isPositive ? AppColors.green : AppColors.red,
+                            color: isPositive ? AppColors.green : AppColors.red,
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
                           ),
@@ -601,8 +587,7 @@ class HomeScreen extends StatelessWidget {
                         Text(
                           statusParts.$2,
                           style: TextStyle(
-                            color:
-                            isPositive ? AppColors.green : AppColors.red,
+                            color: isPositive ? AppColors.green : AppColors.red,
                             fontSize: 12,
                             fontWeight: FontWeight.w900,
                           ),
@@ -616,10 +601,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               _money(expense.amount),
-              style: const TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
             ),
           ],
         ),
@@ -628,10 +610,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _expenseCard(
-      BuildContext context,
-      AppState appState,
-      Expense expense,
-      ) {
+    BuildContext context,
+    AppState appState,
+    Expense expense,
+  ) {
     final lobby = _lobbyForExpense(appState, expense);
     final payer = appState.userById(expense.paidByUserId);
     final status = appState.expenseStatusText(expense);
@@ -730,10 +712,10 @@ class HomeScreen extends StatelessWidget {
   // ---------------------------------------------------------------------------
 
   void _showExpenseDetails(
-      BuildContext context,
-      AppState appState,
-      Expense expense,
-      ) {
+    BuildContext context,
+    AppState appState,
+    Expense expense,
+  ) {
     final lobby = _lobbyForExpense(appState, expense);
     final payer = appState.userById(expense.paidByUserId);
 
@@ -806,10 +788,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 18),
               const Text(
                 'Split details',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               ),
               const SizedBox(height: 10),
               ...expense.splits.map((split) {
@@ -823,11 +802,11 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _splitRow(
-      BuildContext context,
-      AppState appState,
-      Expense expense,
-      ExpenseSplit split,
-      ) {
+    BuildContext context,
+    AppState appState,
+    Expense expense,
+    ExpenseSplit split,
+  ) {
     final user = appState.userById(split.userId);
     final isPayer = split.userId == expense.paidByUserId;
 
@@ -932,10 +911,7 @@ class HomeScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
         ),
         const Spacer(),
         if (action.isNotEmpty)

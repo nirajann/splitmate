@@ -41,10 +41,7 @@ class FriendCard extends StatelessWidget {
             backgroundColor: bg,
             child: Text(
               avatar,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w900,
-              ),
+              style: TextStyle(color: color, fontWeight: FontWeight.w900),
             ),
           ),
           const SizedBox(width: 12),
@@ -75,10 +72,7 @@ class FriendCard extends StatelessWidget {
             ),
           ),
 
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.greyText,
-          ),
+          const Icon(Icons.chevron_right_rounded, color: AppColors.greyText),
         ],
       ),
     );

@@ -5,10 +5,7 @@ class AuthService {
   static const String _userNameKey = 'userName';
   static const String _userEmailKey = 'userEmail';
 
-  Future<void> login({
-    required String name,
-    required String email,
-  }) async {
+  Future<void> login({required String name, required String email}) async {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setBool(_isLoggedInKey, true);
@@ -16,10 +13,7 @@ class AuthService {
     await prefs.setString(_userEmailKey, email);
   }
 
-  Future<void> signup({
-    required String name,
-    required String email,
-  }) async {
+  Future<void> signup({required String name, required String email}) async {
     await login(name: name, email: email);
   }
 

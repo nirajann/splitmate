@@ -44,9 +44,9 @@ class _CreateLobbyScreenState extends State<CreateLobbyScreen> {
     final description = descriptionController.text.trim();
 
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter lobby name')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter lobby name')));
       return;
     }
 
@@ -59,15 +59,12 @@ class _CreateLobbyScreenState extends State<CreateLobbyScreen> {
     final createdLobby = appState.currentUserLobbies.first;
 
     for (final person in invitedPeople) {
-      appState.addMemberToLobby(
-        lobbyId: createdLobby.id,
-        nameOrEmail: person,
-      );
+      appState.addMemberToLobby(lobbyId: createdLobby.id, nameOrEmail: person);
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$name lobby created successfully')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$name lobby created successfully')));
 
     Navigator.pop(context);
   }
@@ -197,10 +194,7 @@ class _CreateLobbyScreenState extends State<CreateLobbyScreen> {
               ),
               child: const Text(
                 'Create Lobby',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               ),
             ),
           ),

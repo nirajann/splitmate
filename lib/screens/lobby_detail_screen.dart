@@ -10,10 +10,7 @@ import '../theme/app_colors.dart';
 class LobbyDetailScreen extends StatefulWidget {
   final Lobby lobby;
 
-  const LobbyDetailScreen({
-    super.key,
-    required this.lobby,
-  });
+  const LobbyDetailScreen({super.key, required this.lobby});
 
   @override
   State<LobbyDetailScreen> createState() => _LobbyDetailScreenState();
@@ -23,7 +20,9 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
   String searchText = '';
 
   Lobby _latestLobby(AppState appState) {
-    final index = appState.lobbies.indexWhere((item) => item.id == widget.lobby.id);
+    final index = appState.lobbies.indexWhere(
+      (item) => item.id == widget.lobby.id,
+    );
 
     if (index == -1) return widget.lobby;
 
@@ -55,11 +54,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFFFF6846),
-              Color(0xFFFF8A4D),
-              Color(0xFFFFD36B),
-            ],
+            colors: [Color(0xFFFF6846), Color(0xFFFF8A4D), Color(0xFFFFD36B)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -96,7 +91,8 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
                         title: 'Members',
                         trailing: '${members.length} people',
                         actionText: 'Add',
-                        onAction: () => _showAddMemberSheet(context, appState, lobby),
+                        onAction: () =>
+                            _showAddMemberSheet(context, appState, lobby),
                       ),
 
                       const SizedBox(height: 12),
@@ -195,9 +191,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
             icon: Icons.ios_share_rounded,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Invite code: ${lobby.inviteCode}'),
-                ),
+                SnackBar(content: Text('Invite code: ${lobby.inviteCode}')),
               );
             },
           ),
@@ -219,11 +213,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
         child: SizedBox(
           height: 42,
           width: 42,
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 20,
-          ),
+          child: Icon(icon, color: Colors.white, size: 20),
         ),
       ),
     );
@@ -493,7 +483,9 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${user.name} removed if no unpaid balance exists.'),
+                          content: Text(
+                            '${user.name} removed if no unpaid balance exists.',
+                          ),
                         ),
                       );
                     },
@@ -551,9 +543,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
                 Expanded(
                   child: Text(
                     '${debtor.name.split(' ').first} owes ${payer.name.split(' ').first}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
                 Column(
@@ -675,10 +665,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
           CircleAvatar(
             radius: 24,
             backgroundColor: const Color(0xFFFFF0D0),
-            child: Icon(
-              _expenseIcon(expense),
-              color: AppColors.orange,
-            ),
+            child: Icon(_expenseIcon(expense), color: AppColors.orange),
           ),
           const SizedBox(width: 13),
           Expanded(
@@ -728,10 +715,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
           const SizedBox(width: 10),
           Text(
             '\$${expense.amount.toStringAsFixed(2)}',
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 15,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
           ),
         ],
       ),
@@ -747,27 +731,17 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
       ),
       child: const Column(
         children: [
-          Icon(
-            Icons.search_off_rounded,
-            size: 38,
-            color: AppColors.greyText,
-          ),
+          Icon(Icons.search_off_rounded, size: 38, color: AppColors.greyText),
           SizedBox(height: 10),
           Text(
             'No expenses found',
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
           ),
           SizedBox(height: 5),
           Text(
             'Add an expense or try another search.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.greyText,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: AppColors.greyText, fontSize: 12),
           ),
         ],
       ),
@@ -800,10 +774,10 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
   }
 
   void _showAddMemberSheet(
-      BuildContext context,
-      AppState appState,
-      Lobby lobby,
-      ) {
+    BuildContext context,
+    AppState appState,
+    Lobby lobby,
+  ) {
     final controller = TextEditingController();
 
     showModalBottomSheet(
@@ -826,10 +800,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
             children: [
               const Text(
                 'Add Member',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 20,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
               ),
               const SizedBox(height: 18),
               TextField(
@@ -883,10 +854,10 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
   }
 
   void _showAddExpenseSheet(
-      BuildContext context,
-      AppState appState,
-      Lobby lobby,
-      ) {
+    BuildContext context,
+    AppState appState,
+    Lobby lobby,
+  ) {
     final titleController = TextEditingController();
     final amountController = TextEditingController();
     final noteController = TextEditingController();
@@ -911,8 +882,9 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             final amount = double.tryParse(amountController.text.trim()) ?? 0;
-            final splitAmount =
-            lobby.memberIds.isEmpty ? 0 : amount / lobby.memberIds.length;
+            final splitAmount = lobby.memberIds.isEmpty
+                ? 0
+                : amount / lobby.memberIds.length;
 
             return Padding(
               padding: EdgeInsets.fromLTRB(
@@ -927,10 +899,7 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
                   const Text(
                     'Add Expense',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 20,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
                   ),
                   const SizedBox(height: 18),
                   _sheetInput(
@@ -991,11 +960,12 @@ class _LobbyDetailScreenState extends State<LobbyDetailScreen> {
                         isExpanded: true,
                         items: ExpenseCategory.values
                             .map<DropdownMenuItem<ExpenseCategory>>((category) {
-                          return DropdownMenuItem<ExpenseCategory>(
-                            value: category,
-                            child: Text(category.name),
-                          );
-                        }).toList(),
+                              return DropdownMenuItem<ExpenseCategory>(
+                                value: category,
+                                child: Text(category.name),
+                              );
+                            })
+                            .toList(),
                         onChanged: (value) {
                           if (value == null) return;
                           setSheetState(() => selectedCategory = value);
